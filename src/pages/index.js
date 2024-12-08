@@ -2,22 +2,25 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 
 export default function Home() {
-  const [users, setUsers] = useState([]); // Estado para armazenar os usuários
+  const [users, setUsers] = useState([]); 
 
   // Função para buscar os dados dos usuários do backend
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://my-app-seven-rho-75.vercel.app/api/table'); // Rota do backend
+        const response = await fetch('/api/table'); 
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
         const data = await response.json();
-        setUsers(data); // Armazena os usuários no estado
+        setUsers(data); 
       } catch (error) {
         console.error('Erro ao buscar os usuários:', error);
       }
     };
 
-    fetchUsers(); // Chama a função de busca
-  }, []); // A dependência vazia garante que a função só seja chamada uma vez
+    fetchUsers(); 
+  }, []); 
 
   return (
     <>
@@ -39,8 +42,8 @@ export default function Home() {
             <tbody>
               {users.length > 0 ? (
                 users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
+                  <tr key={user.Id}>
+                    <td>{user.Id}</td>
                     <td>{user.FirstName}</td>
                     <td>{user.LastName}</td>
                     <td>{user.Email}</td>
