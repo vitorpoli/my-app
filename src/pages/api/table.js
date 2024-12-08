@@ -1,47 +1,32 @@
-require("dotenv").config();
-const express = require("express");
-const mysql = require("mysql2");
-const serverless = require("serverless-http");
+const mysql = require('mysql2/promise');
 
-const app = express();
+module.exports = async (req, res) => {
+  if (req.method === 'GET') {
+    try {
+      const connection = await mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
+      });
 
-let con;
+      // Consultando os dados dos usuários
+      const [rows] = await connection.query('SELECT Id, FirstName, LastName, Email FROM users');
 
-// Função para conectar ao banco de dados
-const connectToDatabase = async () => {
-  if (!con) {
-    con = mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-    });
-    await con.connect();
-    console.log("Database connection established.");
+      // Fechando a conexão
+      await connection.end();
+
+      // Respondendo com os dados
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error('Erro ao buscar os usuários:', error);
+      res.status(500).json({ error: 'Erro ao buscar usuários' });
+    }
+  } else {
+    res.status(405).json({ error: 'Método não permitido' }); // Caso não seja GET
   }
 };
 
-// Rota para buscar usuários
-app.get("/api/users", async (req, res) => {
-  try {
-    await connectToDatabase();
-
-    const query = "SELECT Id, FirstName, LastName, Email FROM users";
-    con.query(query, (err, results) => {
-      if (err) {
-        console.error("Erro ao buscar usuários:", err);
-        return res.status(500).json({ error: "Erro ao buscar usuários" });
-      }
-      res.status(200).json(results);
-    });
-  } catch (error) {
-    console.error("Erro ao conectar com o banco de dados:", error);
-    res.status(500).json({ error: "Erro ao conectar com o banco de dados" });
-  }
-});
-
-// Expor o app como uma função serverless
-module.exports.handler = serverless(app);
 
 
 
