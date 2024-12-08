@@ -1,5 +1,4 @@
-// api/table.js
-import db from '../data/db'; // Conexão com o banco de dados
+import db from '../../data/db';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
