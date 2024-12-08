@@ -1,6 +1,6 @@
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const connection = await mysql.createConnection({
@@ -10,22 +10,19 @@ module.exports = async (req, res) => {
         database: process.env.DB_NAME,
       });
 
-      // Consultando os dados dos usuários
       const [rows] = await connection.query('SELECT Id, FirstName, LastName, Email FROM users');
-
-      // Fechando a conexão
       await connection.end();
 
-      // Respondendo com os dados
-      res.status(200).json(rows);
+      res.status(200).json(rows); // Retorna os dados
     } catch (error) {
       console.error('Erro ao buscar os usuários:', error);
       res.status(500).json({ error: 'Erro ao buscar usuários' });
     }
   } else {
-    res.status(405).json({ error: 'Método não permitido' }); // Caso não seja GET
+    res.status(405).json({ error: 'Método não permitido' });
   }
-};
+}
+
 
 
 
