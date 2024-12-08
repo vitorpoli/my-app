@@ -8,7 +8,7 @@ export default function Home() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/users'); // Rota do backend
+        const response = await fetch('http://my-app-seven-rho-75.vercel.app/api/users'); // Rota do backend
         const data = await response.json();
         setUsers(data); // Armazena os usuários no estado
       } catch (error) {
